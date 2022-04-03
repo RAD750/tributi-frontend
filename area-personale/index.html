@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<title>Agenzia dei Tributi - Area Riservata</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/assets/w3.css">
+<link rel="stylesheet" href="https://cdn.rgbcraft.com/static/fontawesome/css/all.min.css">
+
+<body class="w3-light-gray">
+    <div class="w3-bar w3-flat-midnight-blue">
+        <div class="w3-bar-item w3-titillium"><a href="https://www.rgbcraft.com/">rgbcraft.com</a></div>
+    </div>
+    <div class="w3-border-bottom w3-padding-16">
+        <img src="/assets/AgenziaTributi.svg" class="w3-margin-left" />
+    </div>
+    <!--Barra di navigazione Desktop-->
+    <div class="w3-bar w3-indigo">
+        <div class="w3-bar-item w3-padding w3-hide-medium w3-hide-small"></div>
+        <div class="w3-bar-item w3-hide-medium w3-hide-large w3-titillium">Menu</div>
+        <button class="w3-bar-item w3-button w3-indigo w3-hide-medium w3-hide-large w3-right" onclick="toggleNavbar()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></button>
+        <button style="cursor:pointer;" id="btnHome" class="w3-hide-small w3-bar-item w3-indigo w3-border-blue w3-bottombar" onclick="mostraTab('tabHome');"><i class="fa-solid fa-home"></i> Home</button>
+        <button style="cursor:pointer;" id="btnImponibile" class="w3-hide-small w3-bar-item w3-indigo" onclick="mostraTab('tabImponibile');"><i class="fa-solid fa-chart-pie"></i> Riepilogo imponibile</button>
+        <button style="cursor:pointer;" id="btnConti" class="w3-hide-small w3-bar-item w3-indigo" onclick="mostraTab('tabConti');"><i class="fa-solid fa-wallet"></i> Conti e possedimenti</button>
+        <button style="cursor:pointer;" id="btnAvvisiPagamento" class="w3-hide-small w3-bar-item w3-indigo" onclick="mostraTab('tabAvvisiPagamento');"><i class="fa-solid fa-receipt"></i> Avvisi di pagamento</button>
+        <button style="cursor:pointer;" id="btnEsci" class="w3-hide-small w3-bar-item w3-right w3-indigo" onclick="destroySession();"><i class="fa-solid fa-door-open"></i> Esci</button>
+    </div>
+    <div id="navbar" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:180px">
+        <button style="cursor:pointer;" class="w3-hide-large w3-hide-medium w3-bar-item w3-indigo" onclick="toggleNavbar();mostraTab('tabHome');"><i class="fa-solid fa-home"></i> Home</button>
+        <button style="cursor:pointer;" class="w3-hide-large w3-hide-medium w3-bar-item w3-indigo" onclick="toggleNavbar();mostraTab('tabImponibile');"><i class="fa-solid fa-chart-pie"></i> Riepilogo imponibile</button>
+        <button style="cursor:pointer;" class="w3-hide-large w3-hide-medium w3-bar-item w3-indigo" onclick="toggleNavbar();mostraTab('tabConti');"><i class="fa-solid fa-wallet"></i> Conti e possedimenti</button>
+        <button style="cursor:pointer;" class="w3-hide-large w3-hide-medium w3-bar-item w3-indigo" onclick="mostraTab('tabAvvisiPagamento');"><i class="fa-solid fa-receipt"></i> Avvisi di pagamento</button>
+        <button style="cursor:pointer;" class="w3-hide-large w3-hide-medium w3-bar-item w3-right w3-indigo" onclick="destroySession();"><i class="fa-solid fa-door-open"></i> Esci</button>
+    </div>
+    <span id="currentTab" style="display:none;">tabHome</span>
+    <div class="w3-content" id="tabHome">
+        <h1>Home</h1>
+        <div class="w3-padding">
+            <div class="w3-card w3-white">
+                <div class="w3-bar w3-light-gray">
+                    <h2 class="w3-bar-item">Profilo Utente</h2>
+                </div>
+                <div class="w3-container">
+                    <p><b>Nome utente:&nbsp;</b><span id="lblUser"></span></p>
+                    <p><b>Conti associati:&nbsp;</b><span id="lblContiAssociati">1</span></p>
+                    <p><b>Saldo conto principale:&nbsp;</b><span id="lblSaldo"></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="w3-padding">
+            <div class="w3-card w3-white">
+                <div class="w3-bar w3-light-gray">
+                    <h2 class="w3-bar-item">Messaggi</h2>
+                </div>
+                <div class="w3-container">
+                    <p id="lblMessages">Nessun messaggio da mostrare
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Imponibile-->
+    <div class="w3-content" id="tabImponibile" style="display:none;">
+        <h1>Riepilogo imponibile</h1>
+        <div class="w3-padding">
+            <p>In questa schermata si possono visualizzare <b>tutti gli elementi tassabili</b> relativi all'utenza fiscale corrente.</p>
+            <p>
+                <button class="w3-button w3-indigo w3-margin-right" onclick="apriMdl('mdlFiltro');">
+                    <i class="fa-solid fa-filter"></i>
+                </button>
+                <button id="btnFilterRemove" class="w3-button w3-indigo w3-margin-right" onclick="removeFilter();" disabled>
+                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                </button> Filtro&nbsp;attuale:&nbsp;<b id="lblFilterInterval">mese&nbsp;corrente</b></p>
+        </div>
+        <div class="w3-padding">
+            <table class="w3-table-all" id="tableDGFE">
+                <tr class="w3-indigo">
+                    <th class="w3-hide-small">ID transazione</th>
+                    <th>Orario</th>
+                    <th class="w3-hide-small">Conto</th>
+                    <th>Tipologia</th>
+                    <th>Totale</th>
+                </tr>
+                <tr>
+                    <td>Non sono presenti dati per l'intervallo specificato</td>
+                </tr>
+            </table>
+        </div>
+        <div class="w3-padding">
+            <h2>Totali:</h2>
+            <p>Totale imponibile: <b id="lblTotaleImponibile">0 IC</b></p>
+            <p>Totale imposte: <b id="lblTotaleImposte">0 IC</b></p>
+            <p>Percentuale tasse: <b id="lblPercentualeTasse">0 IC</b> <i class="fa-solid fa-circle-info" onclick="apriMdl('mdlSpiegTasse')" style="cursor:help;"></i></p>
+        </div>
+        <!--Modale per filtri-->
+        <div id="mdlFiltro" class="w3-modal">
+            <div class="w3-modal-content w3-animate-opacity w3-card-4">
+                <header class="w3-container w3-white">
+                    <span onclick="chiudiMdl('mdlFiltro');" class="w3-button w3-display-topright">&times;</span>
+                    <h2>Seleziona filtro</h2>
+                </header>
+                <div class="w3-container">
+                    <p id="lblVerboseError">Per <b>filtrare gli elementi imponibili</b>, selezionare una data di inizio ed una di fine per l'intervallo richiesto.</p>
+                    <p>
+                        <label for="frmFilterStartDate">Inizio:</label>
+                        <input required type="date" id="frmFilterStartDate" class="w3-input">
+                        <label for="frmFilterEndDate">Fine:</label>
+                        <input required type="date" id="frmFilterEndDate" class="w3-input">
+                    </p>
+                    <p>
+                        <span class="w3-text-red" id="lblMdlFilterError"></span>
+                    </p>
+                    <div class="w3-bar">
+                        <button onclick="chiudiMdl('mdlFiltro');" class="w3-red w3-button w3-left">Annulla</button>
+                        <button onclick="applyFilter();" class="w3-indigo w3-button w3-right">Conferma</button>
+                    </div>
+                    <div class="w3-padding"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mdlSpiegTasse" class="w3-modal">
+            <div class="w3-modal-content w3-animate-opacity w3-card-4">
+                <header class="w3-container w3-white">
+                    <span onclick="chiudiMdl('mdlSpiegTasse');" class="w3-button w3-display-topright">&times;</span>
+                    <h2>Percentuali tasse</h2>
+                </header>
+                <div class="w3-container">
+                    <p>Di seguito sono riportate tutte le percentuali di tassazione in base all'imponibile mensile.</p>
+                    <p>
+                        <ul>
+                            <li>Fino a 256.000 IC: nessuna tassa</li>
+                            <li>Sopra 256.000 IC: 1 %</li>
+                            <li>Sopra 512.000 IC: 2.3 % </li>
+                            <li>Sopra 768.000 IC: 4 %</li>
+                            <li>Sopra 1.024.000 IC: 5 %</li>
+                            <li>Sopra 1.280.000 IC: 7 %</li>
+                            <li>Sopra 1.536.000 IC: 12 %</li>
+                            <li>Sopra 2.048.000 IC: 20 %</li>
+                            <li>Sopra 2.560.000 IC: 35 %</li>
+                            <li>Sopra 3.072.000 IC: 45 %</li>
+                            <li>Sopra 3.584.000 IC: 55 %</li>
+                            <li>Sopra 4.096.000 IC: 75 %</li>
+                        </ul>
+                    </p>
+                    <div class="w3-padding"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--Conti-->
+    <div class="w3-content" id="tabConti" style="display:none;">
+        <h1>Conti associati e possedimenti</h1>
+        <div class="w3-padding">
+            <p>In questa schermata si possono visualizzare <b>tutti i conti associati</b> all'utenza fiscale corrente. &Egrave; anche possibile aggiungere o rimuovere conti.</p>
+            <div id="panelLinkedAccountStatus" class="w3-panel w3-display-container w3-green" style="display: none;">
+                <span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-topright">&times;</span>
+                <p id="lblPanelLinkedAccountStatus"></p>
+            </div>
+            <p>
+                <button class="w3-button w3-indigo w3-margin-right" onclick="apriMdl('mdlLinkAccount');">
+                    <i class="fa-solid fa-circle-plus"></i> Associa conto
+                </button>
+            </p>
+        </div>
+        <div class="w3-padding">
+            <table class="w3-table-all" id="tableLinkedAccounts">
+                <tr class="w3-indigo">
+                    <th>ID conto</th>
+                    <th>Denominazione</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td>Non sono presenti altri conti associati a questa utenza fiscale.</td>
+                </tr>
+            </table>
+        </div>
+        <!--Modale per collegamento conto-->
+        <div id="mdlLinkAccount" class="w3-modal">
+            <div class="w3-modal-content w3-animate-opacity w3-card-4">
+                <header class="w3-container w3-white">
+                    <span onclick="chiudiMdl('mdlLinkAccount');" class="w3-button w3-display-topright">&times;</span>
+                    <h2>Collega conto</h2>
+                </header>
+                <div class="w3-container">
+                    <p id="lblVerboseError">Per <b>collegare un conto</b>, inserire il nome utente e la password nPay del conto che si desidera collegare.</p>
+                    <p>
+                        <label for="frmLinkAccountName">Nome utente:</label>
+                        <input required onKeyDown="if(event.keyCode==13) applyLinkAccount();" type="text" id="frmLinkAccountName" class="w3-input">
+                        <label for="frmLinkAccountAuth">Password:</label>
+                        <input required onKeyDown="if(event.keyCode==13) applyLinkAccount();" type="password" id="frmLinkAccountAuth" class="w3-input">
+                    </p>
+                    <p>
+                        <span class="w3-text-red" id="lblMdlLinkAccountError"></span>
+                    </p>
+                    <div class="w3-bar">
+                        <button onclick="chiudiMdl('mdlLinkAccount');" class="w3-red w3-button w3-left">Annulla</button>
+                        <button onclick="applyLinkAccount();" class="w3-indigo w3-button w3-right">Collega</button>
+                    </div>
+                    <div class="w3-padding"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--AvvisiPagamento-->
+    <div class="w3-content" id="tabAvvisiPagamento" style="display:none;">
+        <h1>Avvisi di pagamento</h1>
+        <div class="w3-padding">
+            <p>In questa schermata si possono visualizzare <b>tutti gli avvisi di pagamento</b> relativi all'utenza fiscale corrente.</p>
+        </div>
+        <div id="panelInvoicePaymentStatus" class="w3-panel w3-display-container w3-green" style="display: none;">
+            <span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-topright">&times;</span>
+            <p id="lblPanelInvoicePaymentStatus"></p>
+        </div>
+        <div class="w3-padding">
+            <table class="w3-table-all" id="tableInvoices">
+                <tr class="w3-indigo">
+                    <th class="w3-hide-small">ID</th>
+                    <th class="w3-hide-small">Data e ora</th>
+                    <th>Periodo</th>
+                    <th>Totale imponibile</th>
+                    <th>Totale imposte</th>
+                    <th>Stato</th>
+                </tr>
+                <tr>
+                    <td>Non sono presenti dati per l'intervallo specificato</td>
+                </tr>
+            </table>
+        </div>
+        <!--Modale per pagamento-->
+        <div id="mdlPayInvoice" class="w3-modal">
+            <div class="w3-modal-content w3-animate-opacity w3-card-4">
+                <header class="w3-container w3-white">
+                    <span onclick="chiudiMdl('mdlPayInvoice');" class="w3-button w3-display-topright">&times;</span>
+                    <h2>Salda avviso di pagamento</h2>
+                </header>
+                <div class="w3-container">
+                    <p>Si desidera <b>saldare l'avviso di pagamento</b> ADP2071<span id="lblMdlPayInvoiceInvoiceNumber"></span>?</p>
+                    <div class="w3-bar">
+                        <button onclick="chiudiMdl('mdlPayInvoice');" class="w3-red w3-button w3-left">Annulla</button>
+                        <button onclick="alert('Questo è un errore grave, segnalare immediatamente a lego11 spiegando esattamente cosa avete fatto per farlo succedere');" id="btnPayInvoice" class="w3-indigo w3-button w3-right">Conferma</button>
+                    </div>
+                    <div class="w3-padding"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/assets/main.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            popolaAreaClienti();
+        });
+    </script>
+</body>
+
+</html>
